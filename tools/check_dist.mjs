@@ -16,6 +16,7 @@ for (const match of html.matchAll(/\b(src|href)="([^"]+)"/g)) {
 }
 assert.ok(!existsSync(join(root, 'data/face-landmarks.json')), 'Retired face geometry must not be published');
 assert.ok(!existsSync(join(root, 'images/portrait.jpg')), 'Retired portrait must not be published');
+assert.ok(existsSync(join(root, 'images/portrait-refined.png')), 'The requested portrait must be bundled locally');
 for (const page of ['home', 'about', 'projects', 'skills', 'education', 'contact']) {
   assert.ok(html.includes(`data-page="${page}"`), `Missing destination ${page}`);
 }
@@ -25,6 +26,8 @@ for (const file of cssFiles) {
   const css = readFileSync(join(root, 'assets', file), 'utf8');
   assert.ok(!/url\(\s*["']?https?:/i.test(css), 'Remote CSS resource');
 }
+const scripts = readdirSync(join(root, 'assets')).filter(x => x.endsWith('.js'));
+assert.ok(scripts.every(file => !/createNetwork|WebGLRenderer/.test(readFileSync(join(root, 'assets', file), 'utf8'))), 'The retired network scene must not enter the page bundle');
 function size(dir) { return readdirSync(dir).reduce((sum, name) => {
   const path = join(dir, name); return sum + (statSync(path).isDirectory() ? size(path) : statSync(path).size);
 }, 0); }

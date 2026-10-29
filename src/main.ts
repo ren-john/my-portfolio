@@ -1,65 +1,84 @@
-import { resolvePage, type Page } from './scene/networkLayout';
-import { setupProjectCarousel } from './ui/projectCarousel';
+import { setupProjectOrbit } from './ui/projectOrbit';
 
-const $ = <T extends HTMLElement=HTMLElement>(selector:string)=>document.querySelector<T>(selector)!;
-document.body.classList.add('app-ready');
-const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
-let manuallyStatic=false;
-try{manuallyStatic=localStorage.getItem('portfolio-static')==='true';}catch{/* Optional storage. */}
-const staticMode=()=>manuallyStatic||reducedMotion.matches;
-const motionButton=$<HTMLButtonElement>('#motion-toggle');
-const carousel=setupProjectCarousel(staticMode);
-let network:ReturnType<typeof import('./scene/createNetwork').createNetwork>|undefined;
-let loading=false;
-let page:Page='home';
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+let manuallyStatic = false;
+try { manuallyStatic = localStorage.getItem('portfolio-static') === 'true'; } catch { /* Storage is optional. */ }
+const staticMode = () => manuallyStatic || reducedMotion.matches;
+const motionButton = document.querySelector<HTMLButtonElement>('#motion-toggle')!;
+const header = document.querySelector<HTMLElement>('.site-header')!;
+const hero = document.querySelector<HTMLElement>('.portrait-hero')!;
+const progress = document.querySelector<HTMLElement>('.page-progress span')!;
+const orbit = setupProjectOrbit(staticMode);
+const sections = [...document.querySelectorAll<HTMLElement>('main > section[id]')];
+const navLinks = [...document.querySelectorAll<HTMLAnchorElement>('.site-header nav a')];
+let frame = 0;
 
-async function loadNetwork(){
-  if(network||loading)return;loading=true;
-  try{
-    const {createNetwork}=await import('./scene/createNetwork');
-    network=createNetwork($('#network-stage'));
-    network.setMotion(!staticMode());network.setVisible(page==='home');
-  }catch(error){
-    console.error('Network visualization unavailable; navigation remains accessible.',error);
-    $('#network-canvas').hidden=true;$('#network-stage').classList.add('network-fallback');
-  }finally{loading=false;}
-}
-const titles:Record<Page,string>={home:'Neural map',about:'About',projects:'Projects',skills:'Skills',education:'Education',contact:'Contact'};
-function showPage(moveFocus=true){
-  page=resolvePage(location.hash);
-  if(!['home','about','projects','skills','education','contact','intro','babycue','inventory',''].includes(location.hash.replace(/^#\/?/,'')))history.replaceState(null,'','#home');
-  document.querySelectorAll<HTMLElement>('[data-page]').forEach(view=>{view.hidden=view.dataset.page!==page;});
-  $('.story-layout').hidden=page==='home';$('.site-footer').hidden=page==='home';
-  document.body.dataset.view=page;
-  document.title=`${titles[page]} — AI / ML Portfolio`;
-  document.querySelectorAll<HTMLAnchorElement>('.site-header nav a').forEach(link=>{
-    if(resolvePage(link.hash)===page)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
+function updateScroll() {
+  frame = 0;
+  const y = window.scrollY;
+  header.classList.toggle('is-scrolled', y > 32);
+  const length = document.documentElement.scrollHeight - window.innerHeight;
+  progress.style.transform = `scaleX(${length > 0 ? Math.min(1, y / length) : 0})`;
+  // Only the background moves; document scrolling always stays native.
+  hero.style.setProperty('--portrait-shift', `${staticMode() ? 0 : Math.min(y, hero.offsetHeight) * 0.16}px`);
+  hero.classList.toggle('is-offscreen', y >= hero.offsetHeight);
+  orbit.updateScroll();
+  const current = sections.filter(section => section.getBoundingClientRect().top <= 150).at(-1)?.id ?? 'home';
+  navLinks.forEach(link => {
+    if (link.hash === `#${current}`) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
   });
-  carousel.close();
-  if(page==='projects'){
-    carousel.refresh();
-    if(location.hash==='#babycue')carousel.select(1);
-    if(location.hash==='#inventory')carousel.select(2);
-  }
-  if(page==='home')void loadNetwork();
-  network?.setVisible(page==='home');
-  window.scrollTo({top:0,behavior:'instant'});
-  if(moveFocus){
-    const heading=document.querySelector<HTMLElement>(`[data-page="${page}"] h1,[data-page="${page}"] h2`);
-    if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}
-  }
 }
-function syncMotion(){
-  const off=staticMode();document.body.classList.toggle('static-mode',off);
-  motionButton.setAttribute('aria-pressed',String(off));motionButton.disabled=reducedMotion.matches;
-  motionButton.title=reducedMotion.matches?'Reduced motion is enabled in your system settings':off?'Turn on network motion':'Turn off network motion';
-  motionButton.setAttribute('aria-label',motionButton.title);$('.motion-label').textContent=off?'Motion off':'Motion on';
-  network?.setMotion(!off);
+function scheduleScroll() { if (!frame) frame = requestAnimationFrame(updateScroll); }
+function syncMotion() {
+  const off = staticMode();
+  document.body.classList.toggle('static-mode', off);
+  motionButton.setAttribute('aria-pressed', String(off));
+  motionButton.disabled = reducedMotion.matches;
+  motionButton.title = reducedMotion.matches ? 'Reduced motion follows your system settings' : off ? 'Turn on motion' : 'Turn off motion';
+  motionButton.querySelector('.motion-label')!.textContent = off ? 'Motion off' : 'Motion on';
+  orbit.syncMotion();
+  scheduleScroll();
 }
-motionButton.addEventListener('click',()=>{if(reducedMotion.matches)return;manuallyStatic=!manuallyStatic;try{localStorage.setItem('portfolio-static',String(manuallyStatic));}catch{}syncMotion();});
-reducedMotion.addEventListener('change',syncMotion);
-window.addEventListener('hashchange',()=>showPage());
-window.addEventListener('pageshow',()=>showPage(false));
-$('#year').textContent=String(new Date().getFullYear());
-syncMotion();showPage(false);
-window.addEventListener('pagehide',event=>{if(!event.persisted){network?.dispose();carousel.dispose();}});
+motionButton.addEventListener('click', () => {
+  manuallyStatic = !manuallyStatic;
+  try { localStorage.setItem('portfolio-static', String(manuallyStatic)); } catch { /* Storage is optional. */ }
+  syncMotion();
+});
+reducedMotion.addEventListener('change', syncMotion);
+window.addEventListener('scroll', scheduleScroll, { passive: true });
+window.addEventListener('resize', scheduleScroll);
+
+// Existing project links remain valid within the new continuous page.
+function followProjectHash() {
+  const aliases: Record<string, number> = { '#babycue': 1, '#inventory': 2 };
+  const index = aliases[location.hash];
+  if (index !== undefined || location.hash === '#projects') orbit.reveal(index);
+}
+window.addEventListener('hashchange', followProjectHash);
+window.addEventListener('pageshow', () => { followProjectHash(); scheduleScroll(); });
+document.querySelectorAll<HTMLAnchorElement>('a[href="#projects"]').forEach(link => {
+  link.addEventListener('click', event => {
+    event.preventDefault();
+    if (location.hash !== '#projects') history.pushState(null, '', '#projects');
+    orbit.reveal();
+    document.querySelector<HTMLElement>('#project-gallery')!.focus({ preventScroll: true });
+  });
+});
+
+// Content remains visible without JavaScript or when reduced motion is requested.
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    entry.target.classList.add('is-revealed');
+    revealObserver.unobserve(entry.target);
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('[data-reveal]').forEach(element => revealObserver.observe(element));
+document.querySelector('#year')!.textContent = String(new Date().getFullYear());
+syncMotion();
+followProjectHash();
+updateScroll();
+window.addEventListener('pagehide', event => {
+  if (!event.persisted) { revealObserver.disconnect(); orbit.dispose(); cancelAnimationFrame(frame); }
+});

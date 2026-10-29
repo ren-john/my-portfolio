@@ -1,0 +1,10 @@
+Tool: built-in image_gen (edit)
+Source: Assets/Archive/portrait/public/images/portrait.jpg
+Output: Assets/Archive/portrait/public/images/portrait-refined.png
+
+Use case: identity-preserve.
+Input image 1 is the edit target: the supplied formal head-and-shoulders portrait.
+Primary request: enhance and subtly refine this exact portrait while faithfully preserving the person's facial features and recognizable likeness. Produce a photorealistic, professionally retouched version of the same photograph.
+Change only image quality and subtle photographic finishing: remove scan/compression noise and color artifacts, restore clean natural detail, gently balance exposure and white balance, refine soft even studio lighting and contrast, and render hair, eyes and suit fabric with clear but restrained detail. Keep realistic skin texture, pores and natural tonal variation; use very light skin retouching.
+Preserve strictly: exact face shape, eye shape and spacing, eyelids, eyebrows, nose, lips, ears, jaw and chin proportions, original skin tone, age, facial hair, hairstyle and characteristic forehead curls, neutral closed-mouth expression, gaze, front-facing pose, head angle, shoulder proportions, black suit, white shirt and patterned tie. Keep the same plain white background, vertical approximately 3:4 composition, crop and centered placement.
+Avoid reshaping or beautifying facial structure, changing identity, making eyes bigger, slimming the face, changing the hairline, removing facial hair, artificial skin smoothing, glamour styling, heavy sharpening, new accessories, text or watermark. The result should look like the original person in a cleaner, higher-quality version of the original photograph.

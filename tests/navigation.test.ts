@@ -37,7 +37,7 @@ test('network regeneration is deterministic with finite normalized randomness',(
   const a=seededRandom(71241),b=seededRandom(71241);
   for(let i=0;i<1000;i++){const n=a();assert.equal(n,b());assert.ok(n>=0&&n<1);}
 });
-test('all seven project buttons have matching detail templates and all five links have pages',()=>{
+test('all seven projects retain their notes in the continuous portfolio',()=>{
   const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
   for(let i=0;i<7;i++){
     assert.equal(html.split(`data-project="${i}"`).length-1,1);
@@ -45,6 +45,10 @@ test('all seven project buttons have matching detail templates and all five link
   }
   assert.equal([...html.matchAll(/data-page="/g)].length,6);
   for(const destination of destinations)assert.ok(html.includes(`data-page="${destination}"`));
-  assert.ok(!html.includes('id="portrait"'));
-  assert.ok(!html.includes('Renmar John Morales'));
+  assert.ok(html.includes('Renmar John Morales'));
+  assert.ok(html.includes('./images/portrait-refined.png'));
+  assert.ok(!html.includes('id="network-canvas"'));
+  for(const destination of ['home',...destinations]){
+    assert.ok(html.includes(`id="${destination}"`));
+  }
 });

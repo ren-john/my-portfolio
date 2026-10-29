@@ -1,1 +1,10 @@
-:root{--paper:#080808;--ink:#f5f5f5;--green:#ffffff;--muted:#a0a0a0;--line:#303030;--mono:'Courier New',monospace}
+:root {
+  --paper: #141414;
+  --ink: #f0f0ec;
+  --muted: #aaa;
+  --line: #ffffff25;
+  --plum: #5F2A62;
+  --lime: #A0DE59;
+  --mono: 'Courier New', monospace;
+  --gutter: clamp(24px, 5.5vw, 100px);
+}
