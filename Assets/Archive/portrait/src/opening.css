@@ -1,0 +1,50 @@
+/* Layout and palette revision. Font families and existing content typography remain unchanged. */
+html{scroll-padding-top:110px}body{background:#080808;color:#f5f5f5}
+.site-header{background:rgba(8,8,8,.96);max-width:none}
+.skip-link{color:#080808}.page-progress{display:none}
+.opening-story{position:relative;background:#080808;isolation:isolate}
+.opening-sticky{position:relative}
+.opening-story .face-stage{position:relative;width:100%;height:100svh;margin:0;min-height:0;background:#080808;overflow:hidden;border-radius:0}
+.opening-story .portrait-frame{height:86%;max-width:88%;mix-blend-mode:normal;mask-image:linear-gradient(black 78%,transparent 99%)}
+.opening-story #portrait{filter:grayscale(1);object-fit:contain}
+.opening-story .face-stage.particle-mode{background:#080808;border-radius:0}
+.opening-story .particle-mode::after{box-shadow:inset 0 0 65px 12px #080808}
+.opening-name{position:absolute;top:61svh;left:3%;width:94%;margin:0;text-align:center;color:white;font-size:clamp(38px,7.4vw,112px);font-weight:500;letter-spacing:-.06em;line-height:1.05;z-index:4;pointer-events:none;text-shadow:0 2px 30px #000}
+.opening-heading{position:relative;padding:70px 8%;z-index:3;pointer-events:none}
+.opening-heading h1{margin:0}.opening-heading [data-particle-line]{display:block;white-space:nowrap}
+.js-ready .opening-story{height:260svh}
+.js-ready .opening-sticky{position:sticky;top:0;height:100svh;overflow:hidden}
+.js-ready .opening-story .face-stage{position:absolute;inset:0;height:100%;width:100%}
+.js-ready .opening-heading{position:absolute;left:8%;top:50%;padding:0;transform:translateY(-50%);opacity:var(--heading-opacity,0)}
+.js-ready .opening-name{opacity:var(--name-opacity,1)}
+.opening-story .scene-error{position:absolute;left:5%;right:5%;bottom:15px;z-index:5;color:#999;font-size:11px;margin:0;background:transparent}
+.opening-story .scene-error button{color:white}
+.story-layout{display:block;max-width:1100px;padding:0 7%;margin:auto}
+.chapters{max-width:760px;margin:0 auto;width:100%}
+.hero{min-height:unset;padding:80px 0}.hero-description{max-width:550px}.hero-foot{margin-top:35px}
+.chapter{padding:90px 0}.chapter.hero{padding-top:70px}
+.button-primary,.button-primary:hover{background:#fff;color:#080808;border-color:#fff}.button-primary:hover{background:#ddd}
+.note{background:#171717}.tags span{color:#bbb;border-color:#3c3c3c}
+.status-pill{background:#202020;color:#eee}.text-link{border-color:#626262}
+.project-visual{filter:grayscale(1)}.note strong{color:white}
+.fatigue-visual{background:#202020;color:#dedede}.baby-visual{background:#ddd;color:#222}.inventory-visual{background:#ccc;color:#222}
+.diagram-footer .live-dot{background:currentColor}
+.site-footer{max-width:none}.motion-button:disabled{opacity:.65;cursor:default}
+@media(max-width:900px){
+  html{scroll-padding-top:90px}.story-layout{padding:0 7%}.chapters{max-width:640px}
+  .opening-story .face-stage{height:100svh}.js-ready .opening-story{height:240svh}
+  .opening-name{font-size:clamp(38px,8.5vw,76px);left:5%;width:90%;top:64svh}
+  .opening-story .face-stage.particle-mode{margin:0;height:100%}
+  .opening-heading{padding:65px 7%}.js-ready .opening-heading{left:7%}
+  .opening-story .particle-mode::after{box-shadow:inset 0 0 40px 5px #080808}
+  .hero{padding:55px 0}.opening-story .scene-error{width:auto}
+}
+@media(max-width:480px){
+  html{scroll-padding-top:90px}.opening-name{font-size:clamp(34px,10vw,48px);max-width:90%;top:65svh;line-height:1.1}
+  .opening-story .portrait-frame{height:78%;max-width:96%}
+  .js-ready .opening-heading{left:7%;right:5%}.opening-heading h1{font-size:57px}
+}
+@media(max-height:520px){
+  .opening-name{font-size:clamp(30px,6.3vw,76px);top:65svh}
+  .opening-heading h1{font-size:clamp(28px,10svh,52px)}
+}
